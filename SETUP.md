@@ -3,6 +3,21 @@
 El curso corre dentro de un **Dev Container**: un entorno con PHP, Composer y Node\
 ya pineados, idéntico para todos. Esto evita el clásico "en mi máquina funciona".
 
+## Paso 0 · Haz fork del repo (obligatorio)
+
+Este repo es el **template original** del curso. Tu progreso (la app que
+construyes, tus commits, tu página de avance) debe vivir en **tu propio fork**,
+no aquí.
+
+1. En GitHub, haz clic en **Fork** (arriba a la derecha de esta página).
+2. Clona **tu fork**, no el original.
+3. Continúa con las opciones de abajo para preparar el entorno.
+
+> Si clonas el repo original en lugar de tu fork, no podrás hacer `git push`
+> y perderás tu progreso.
+
+---
+
 Elige **uno** de estos tres caminos. Cuando termines, vuelve a `README.md` y di a\
 Claude Code: **"empecemos la sesión 1"**.
 
@@ -10,9 +25,7 @@ Claude Code: **"empecemos la sesión 1"**.
 
 No instalas nada local; el contenedor corre en la nube.
 
-1. Sube este repo a tu cuenta de GitHub.
-
-2. En la página del repo: botón **Code** → pestaña **Codespaces** → **Create codespace on main**.
+1. En la página de **tu fork**: botón **Code** → pestaña **Codespaces** → **Create codespace on main**.
 
 3. Espera a que construya el contenedor (lee `.devcontainer/devcontainer.json` solo). Te deja en un VS Code en el navegador, ya dentro del entorno.
 

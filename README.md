@@ -37,10 +37,15 @@ todos tienen el mismo entorno. **Sigue la guía paso a paso en
 
 ## Arranque
 
-1. **Prepara el entorno siguiendo [`SETUP.md`](SETUP.md)** y ábrelo en el Dev
+> **Este repo es el template del curso. Tu progreso va en tu propio fork.**
+
+1. **Haz fork** de este repo a tu cuenta de GitHub (botón *Fork* arriba a la
+   derecha). Así tu avance es tuyo y puedes publicar tu página de progreso.
+2. **Clona tu fork** (no el original) en tu máquina o ábrelo en Codespaces.
+3. **Prepara el entorno siguiendo [`SETUP.md`](SETUP.md)** y ábrelo en el Dev
    Container.
-2. Inicia Claude Code y dile: **"empecemos la sesión 1"**.
-3. La Sesión 1 te guía a instalar Laravel desde cero. A partir de ahí, el curso
+4. Inicia Claude Code y dile: **"empecemos la sesión 1"**.
+5. La Sesión 1 te guía a instalar Laravel desde cero. A partir de ahí, el curso
    fluye solo.
 
 Para retomar más tarde, abre Claude Code y di "siguiente sesión": leerá tu

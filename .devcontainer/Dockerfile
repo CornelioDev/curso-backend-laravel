@@ -7,3 +7,5 @@ FROM mcr.microsoft.com/devcontainers/php:1-8.3-bookworm
 RUN rm -f /etc/apt/sources.list.d/yarn.list /usr/share/keyrings/yarnkey.gpg
 
 RUN apt-get update && apt-get install -y sqlite3 libsqlite3-dev && rm -rf /var/lib/apt/lists/*
+
+RUN sed -i 's/xdebug.mode = debug/xdebug.mode = coverage/' /usr/local/etc/php/conf.d/xdebug.ini

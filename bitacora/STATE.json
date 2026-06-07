@@ -1,10 +1,10 @@
 {
   "course": "Backend a profundidad con Laravel",
   "version": "0.1.0",
-  "current": "01-instalacion-y-arranque",
-  "totals": { "done": 0, "total": 50 },
+  "current": "02-anatomia-proyecto",
+  "totals": { "done": 1, "total": 50 },
   "sessions": {
-    "01-instalacion-y-arranque": "in_progress",
+    "01-instalacion-y-arranque": "done",
     "02-anatomia-proyecto": "pending",
     "03-ciclo-de-vida-request": "pending",
     "04-workflow-git": "pending",

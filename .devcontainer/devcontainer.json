@@ -1,0 +1,26 @@
+{
+  "name": "Backend con Laravel — Curso",
+  "image": "mcr.microsoft.com/devcontainers/php:1-8.3-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/sqlite3:1": {}
+  },
+  "forwardPorts": [8000, 5173, 8080],
+  "portsAttributes": {
+    "8000": { "label": "Laravel (artisan serve)" },
+    "5173": { "label": "Vite" },
+    "8080": { "label": "Página de progreso" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "onecentlin.laravel-blade",
+        "pgl.laravel-jump-controller"
+      ]
+    }
+  },
+  "postCreateCommand": "php -v && composer --version && node -v",
+  "remoteUser": "vscode"
+}

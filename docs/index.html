@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Progreso · Backend con Laravel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f14;
+    --panel: #11161d;
+    --line: #1e2630;
+    --ink: #c9d4e0;
+    --ink-dim: #6b7889;
+    --amber: #ffb454;
+    --amber-soft: #ffb45422;
+    --green: #6cc99a;
+    --blue: #5aa9e6;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    --sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    line-height: 1.55;
+    min-height: 100vh;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 50% -10%, #16202c 0%, var(--bg) 60%);
+    z-index: -1;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
+
+  /* Header */
+  header { margin-bottom: 3.5rem; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: .72rem; letter-spacing: .28em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 1rem;
+  }
+  h1 {
+    font-size: clamp(2rem, 6vw, 3.1rem); font-weight: 700;
+    letter-spacing: -.02em; line-height: 1.04; margin-bottom: .4rem;
+  }
+  h1 .accent { color: var(--amber); }
+  .subtitle { color: var(--ink-dim); font-size: 1rem; max-width: 46ch; }
+
+  /* Progress meter */
+  .meter { margin: 2.75rem 0 .5rem; }
+  .meter-top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-family: var(--mono); margin-bottom: .7rem;
+  }
+  .meter-count { font-size: 1.05rem; color: var(--ink); }
+  .meter-count b { color: var(--amber); font-size: 1.6rem; font-weight: 600; }
+  .meter-pct { color: var(--ink-dim); font-size: .85rem; }
+  .bar {
+    height: 8px; background: var(--line); border-radius: 99px; overflow: hidden;
+    border: 1px solid #232c37;
+  }
+  .bar-fill {
+    height: 100%; width: 0;
+    background: linear-gradient(90deg, var(--amber), #ffcf8a);
+    border-radius: 99px;
+    transition: width 1.1s cubic-bezier(.2,.8,.2,1);
+    box-shadow: 0 0 14px var(--amber-soft);
+  }
+
+  /* Phases */
+  .phase { margin-top: 2.6rem; opacity: 0; transform: translateY(10px); }
+  .phase.in { animation: rise .6s forwards; }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  .phase-head {
+    display: flex; align-items: center; gap: .8rem;
+    font-family: var(--mono); font-size: .78rem; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--ink-dim); margin-bottom: .9rem;
+  }
+  .phase-head .num { color: var(--amber); }
+  .phase-head .rule { flex: 1; height: 1px; background: var(--line); }
+
+  ul { list-style: none; }
+  li.session {
+    display: flex; align-items: center; gap: .9rem;
+    padding: .62rem .9rem; border: 1px solid var(--line);
+    border-radius: 8px; margin-bottom: .4rem; background: var(--panel);
+    font-family: var(--mono); font-size: .9rem;
+    transition: border-color .2s, transform .2s;
+  }
+  li.session:hover { border-color: #2c3744; transform: translateX(2px); }
+  .sid { color: var(--ink-dim); font-size: .8rem; min-width: 1.6rem; }
+  .stitle { flex: 1; font-family: var(--sans); color: var(--ink); }
+  .dot { width: 9px; height: 9px; border-radius: 99px; flex-shrink: 0; }
+  .badge {
+    font-family: var(--mono); font-size: .64rem; letter-spacing: .12em;
+    text-transform: uppercase; padding: .2rem .5rem; border-radius: 5px;
+  }
+
+  /* states */
+  .done .dot { background: var(--green); box-shadow: 0 0 8px #6cc99a66; }
+  .done .badge { color: var(--green); background: #6cc99a14; }
+  .done .stitle { color: var(--ink); }
+
+  .current { border-color: var(--amber); background: #1a1710; }
+  .current .dot { background: var(--amber); box-shadow: 0 0 10px var(--amber); animation: pulse 1.8s infinite; }
+  .current .badge { color: var(--amber); background: var(--amber-soft); }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+  .locked { opacity: .5; }
+  .locked .dot { background: var(--line); }
+  .locked .stitle { color: var(--ink-dim); }
+  .locked .badge { color: var(--ink-dim); background: #ffffff08; }
+
+  footer {
+    margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
+    font-family: var(--mono); font-size: .74rem; color: var(--ink-dim);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: .5rem;
+  }
+  footer a { color: var(--amber); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">// Curso · progreso</div>
+    <h1>Backend a profundidad<br><span class="accent">con Laravel</span></h1>
+    <p class="subtitle">Un test en rojo a la vez. El backend de verdad, construido sesión por sesión.</p>
+
+    <div class="meter">
+      <div class="meter-top">
+        <span class="meter-count"><b id="done">0</b> / <span id="total">50</span> sesiones</span>
+        <span class="meter-pct" id="pct">0%</span>
+      </div>
+      <div class="bar"><div class="bar-fill" id="fill"></div></div>
+    </div>
+  </header>
+
+  <main id="phases"></main>
+
+  <footer>
+    <span>Generado desde STATE.json</span>
+    <span>tutor socrático · pistas, no soluciones</span>
+  </footer>
+</div>
+
+<script>
+/* === COURSE DATA · regenerado por Claude Code al cerrar cada sesión ===
+   Solo metadata segura (título + estado). Nunca contenido de sesiones. */
+const COURSE = {
+  total: 50,
+  phases: [
+    { name: "Fase 0 · Fundamentos y entorno", sessions: [
+      { id: "01", title: "Instalación desde cero y arranque", status: "current" },
+      { id: "02", title: "Anatomía de un proyecto Laravel", status: "locked" },
+      { id: "03", title: "El ciclo de vida de un request a fondo", status: "locked" },
+      { id: "04", title: "Workflow de trabajo: ramas y commits", status: "locked" },
+    ]},
+    { name: "Fase 1 · La capa HTTP", sessions: [
+      { id: "05", title: "Routing y tu primer endpoint", status: "locked" },
+      { id: "06", title: "Controllers y la capa HTTP", status: "locked" },
+      { id: "07", title: "Request y Response", status: "locked" },
+      { id: "08", title: "Middleware y el pipeline", status: "locked" },
+      { id: "09", title: "Idempotencia y métodos HTTP", status: "locked" },
+    ]},
+    { name: "Fase 2 · Datos y persistencia", sessions: [
+      { id: "10", title: "Modelado relacional y migraciones", status: "locked" },
+      { id: "11", title: "Eloquent y el SQL que genera", status: "locked" },
+      { id: "12", title: "Relaciones y eager loading", status: "locked" },
+      { id: "13", title: "El problema N+1", status: "locked" },
+      { id: "14", title: "Transacciones atómicas", status: "locked" },
+      { id: "15", title: "Locking y race conditions", status: "locked" },
+      { id: "16", title: "Índices y performance de queries", status: "locked" },
+    ]},
+    { name: "Fase 3 · Arquitectura", sessions: [
+      { id: "17", title: "Validación con Form Requests", status: "locked" },
+      { id: "18", title: "Service layer y Actions", status: "locked" },
+      { id: "19", title: "DTOs y flujo de datos", status: "locked" },
+      { id: "20", title: "El contenedor IoC", status: "locked" },
+      { id: "21", title: "Binding de interfaces", status: "locked" },
+      { id: "22", title: "Repository pattern", status: "locked" },
+      { id: "23", title: "Eventos de dominio", status: "locked" },
+    ]},
+    { name: "Fase 4 · Diseño de APIs", sessions: [
+      { id: "24", title: "REST y diseño de recursos", status: "locked" },
+      { id: "25", title: "API Resources: serialización", status: "locked" },
+      { id: "26", title: "Versionado de API", status: "locked" },
+      { id: "27", title: "Paginación, filtrado y orden", status: "locked" },
+      { id: "28", title: "Contrato de errores", status: "locked" },
+      { id: "29", title: "Rate limiting", status: "locked" },
+    ]},
+    { name: "Fase 5 · Auth y seguridad", sessions: [
+      { id: "30", title: "Entender el auth heredado", status: "locked" },
+      { id: "31", title: "Gates y Policies (RBAC)", status: "locked" },
+      { id: "32", title: "Tokens de API con Sanctum", status: "locked" },
+      { id: "33", title: "Seguridad: mass assignment, SQLi, CSRF, XSS", status: "locked" },
+      { id: "34", title: "Secretos y .env", status: "locked" },
+      { id: "35", title: "Hardening y signed URLs", status: "locked" },
+    ]},
+    { name: "Fase 6 · Asincronía y eventos", sessions: [
+      { id: "36", title: "Events & Listeners", status: "locked" },
+      { id: "37", title: "Queues y Jobs", status: "locked" },
+      { id: "38", title: "Workers y Redis", status: "locked" },
+      { id: "39", title: "Jobs idempotentes y reintentos", status: "locked" },
+      { id: "40", title: "Notifications y Mail", status: "locked" },
+      { id: "41", title: "Scheduler", status: "locked" },
+    ]},
+    { name: "Fase 7 · Generación de boletas", sessions: [
+      { id: "42", title: "Storage y URLs firmadas", status: "locked" },
+      { id: "43", title: "PDF de la boleta en cola", status: "locked" },
+      { id: "44", title: "QR firmado y uso único", status: "locked" },
+    ]},
+    { name: "Fase 8 · Caché, performance, concurrencia", sessions: [
+      { id: "45", title: "Caché con Redis", status: "locked" },
+      { id: "46", title: "Atomic locks", status: "locked" },
+      { id: "47", title: "Profiling y optimización", status: "locked" },
+    ]},
+    { name: "Fase 9 · Observabilidad y operación", sessions: [
+      { id: "48", title: "Logging y manejo de errores", status: "locked" },
+      { id: "49", title: "CI como quality gate", status: "locked" },
+      { id: "50", title: "Deploy: migraciones y zero-downtime", status: "locked" },
+    ]},
+  ]
+};
+/* === FIN COURSE DATA === */
+
+const LABEL = { done: "hecho", current: "en curso", locked: "bloqueado" };
+
+(function render() {
+  const root = document.getElementById("phases");
+  let done = 0;
+  COURSE.phases.forEach((phase, pi) => {
+    const sec = document.createElement("section");
+    sec.className = "phase";
+    sec.style.animationDelay = (pi * 70) + "ms";
+    const num = String(pi).padStart(2, "0");
+    sec.innerHTML = `<div class="phase-head"><span class="num">${num}</span>${phase.name}<span class="rule"></span></div>`;
+    const ul = document.createElement("ul");
+    phase.sessions.forEach(s => {
+      if (s.status === "done") done++;
+      const cls = s.status === "current" ? "current" : s.status;
+      const li = document.createElement("li");
+      li.className = "session " + cls;
+      li.innerHTML =
+        `<span class="dot"></span>` +
+        `<span class="sid">${s.id}</span>` +
+        `<span class="stitle">${s.title}</span>` +
+        `<span class="badge">${LABEL[s.status] || s.status}</span>`;
+      ul.appendChild(li);
+    });
+    sec.appendChild(ul);
+    root.appendChild(sec);
+    requestAnimationFrame(() => sec.classList.add("in"));
+  });
+
+  const total = COURSE.total;
+  const pct = Math.round((done / total) * 100);
+  document.getElementById("done").textContent = done;
+  document.getElementById("total").textContent = total;
+  document.getElementById("pct").textContent = pct + "%";
+  setTimeout(() => { document.getElementById("fill").style.width = pct + "%"; }, 250);
+})();
+</script>
+</body>
+</html>
